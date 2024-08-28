@@ -6,14 +6,16 @@ const jwt = require('jsonwebtoken');
 
 const loginController = async (req,res)=>{
     let {email,password} = req.body;
-    let user = await findOne({email:email});
-    let result = await comparePassword(password,user.password);
-    if(!user||!result){
-        return res.status(401).json({error:"Invalid email or password"});
+    let user = await userModel.findOne({email});
+    if(!user)  res.send("the invalid credential")
+    let result = await comparePassword(password,user?.password);
+    if(!result){
+        return res.status(401).json({error:"Invalid email or password !!"});
     }
-    const token = jwt.sign({email:user.email,id:user._id},"secret");
-    req.cookie('token',token);
-    res.send("logged in");
+    const token = jwt.sign({email:user.email,userId:user._id},"secret");
+    res.cookie('token',token);
+    console.log(user,token)
+    res.send("user login successfuly");
 
 }
 
